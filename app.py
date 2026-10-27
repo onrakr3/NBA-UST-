@@ -8,7 +8,9 @@ st.set_page_config(
 )
 
 st.title("🔥 OverGrid: Profesyonel NBA Üst Analiz Platformu")
-st.markdown("Resmi NBA verileriyle ÜST tahmin ve iddia barem matrisi.")
+st.markdown(
+    "Konferans bazlı resmi NBA verileri ve ÜST iddia tahmin matrisi."
+)
 
 dosya_adi = "NBA_İDDİA_Üst_Takimlar.csv"
 
@@ -18,22 +20,7 @@ except Exception as e:
   st.error(f"Veri yüklenirken hata oluştu: {e}")
   st.stop()
 
-# İstediğin takım isimleri ve genel düzeltmeler için sözlük
-isim_duzeltmeleri = {
-    "Indiana": "Indiana",
-    "Oklahoma": "Oklahoma",
-    "Philadelphia": "Philadelphia",
-    "Utah": "Utah Jazz",
-    "Utah Jazz": "Utah Jazz",
-}
 
-# Eğer dataframe içinde Takim_adi sütunu varsa isimleri güncelleyelim
-if "Takim_adi" in df.columns:
-  for eski, yeni in isim_duzeltmeleri.items():
-    df["Takim_adi"] = df["Takim_adi"].str.replace(eski, yeni, regex=False)
-
-
-# Esnek ve kusursuz logo eşleştirme fonksiyonu
 def get_logo(takim_adi):
   if not isinstance(takim_adi, str):
     return None
@@ -82,11 +69,9 @@ def get_logo(takim_adi):
     return "https://a.espncdn.com/i/teamlogos/nba/500/okc.png"
   elif "orlando" in t or "magic" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/orl.png"
-  elif (
-      "philadelphia" in t or "76ers" in t or "phila" in t or "phıladelphia" in t
-  ):
+  elif "philadelphia" in t or "76ers" in t or "phila" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/phi.png"
-  elif "phoenix" in t or "suns" in t or "anka" in t:
+  elif "phoenix" in t or "suns" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/phx.png"
   elif "portland" in t or "blazers" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/por.png"
@@ -105,27 +90,75 @@ def get_logo(takim_adi):
 
 df["Logo"] = df["Takim_adi"].apply(get_logo)
 
+# Doğu konferansı takımları listesi
+dogu_listesi = [
+    "Boston",
+    "Celtics",
+    "Brooklyn",
+    "Nets",
+    "New York",
+    "Knicks",
+    "Philadelphia",
+    "76ers",
+    "Toronto",
+    "Raptors",
+    "Chicago",
+    "Bulls",
+    "Cleveland",
+    "Cavaliers",
+    "Detroit",
+    "Pistons",
+    "Indiana",
+    "Pacers",
+    "Milwaukee",
+    "Bucks",
+    "Atlanta",
+    "Hawks",
+    "Charlotte",
+    "Hornets",
+    "Miami",
+    "Heat",
+    "Orlando",
+    "Magic",
+    "Washington",
+    "Wizards",
+]
+
+
+def konferans_ayir(takim):
+  if not isinstance(takim, str):
+    return "Batı"
+  if any(d.lower() in takim.lower() for d in dogu_listesi):
+    return "Doğu"
+  return "Batı"
+
+
+df["Konferans"] = df["Takim_adi"].apply(konferans_ayir)
+
+# Ana Sekmeler (1. Sekme Konferanslar, 2. Sekme Maç Tahmini)
 tab1, tab2 = st.tabs(
-    ["📊 Genel Takım İstatistikleri", "🔥 Maç Eşleşmesi & Skor Tahmini"]
+    ["📊 Konferans Puan & İstatistik Tabloları", "🔥 Maç Eşleşmesi & Skor Tahmini"]
 )
 
 with tab1:
-  st.subheader("Takım Hücum ve Savunma Ortalamaları")
-  st.markdown("Takımların performanslarına göre hazırlanan ÜST tablosu.")
-
-  arama = st.text_input(
-      "🔍 Takım Ara", placeholder="Takım adı yazın (örn. Boston, Lakers)..."
-  )
-  if arama:
-    df_filtered = df[df["Takim_adi"].str.contains(arama, case=False, na=False)]
-  else:
-    df_filtered = df
-
-  cols = ["Logo"] + [c for c in df_filtered.columns if c != "Logo"]
-  df_filtered = df_filtered[cols]
-
+  st.subheader("🏀 Doğu Konferansı Takımları")
+  df_dogu = df[df["Konferans"] == "Doğu"]
+  cols = ["Logo"] + [c for c in df_dogu.columns if c != "Logo"]
   st.dataframe(
-      df_filtered,
+      df_dogu[cols],
+      column_config={
+          "Logo": st.column_config.ImageColumn("Arma", help="Kulüp Arması")
+      },
+      use_container_width=True,
+  )
+
+  st.markdown("---")
+
+  st.subheader("🏀 Batı Konferansı Takımları")
+  df_bati = df[df["Konferans"] == "Batı"]
+  cols_bati = ["Logo"] + [c for c in df_bati.columns if c != "Logo"]
+  st.dataframe(
+      df_bati[cols_bati],
       column_config={
           "Logo": st.column_config.ImageColumn("Arma", help="Kulüp Arması")
       },
@@ -205,7 +238,7 @@ with tab2:
         ust_yuzde = min(max(int(50 + (fark * 5)), 5), 95)
         alt_yuzde = 100 - ust_yuzde
 
-        if ust_yuzge := ust_yuzde >= 75:
+        if ust_yuzde >= 75:
           tavsiye = "🔥 Çok Güçlü ÜST"
         elif ust_yuzde >= 55:
           tavsiye = "⚡ İdeal ÜST"
