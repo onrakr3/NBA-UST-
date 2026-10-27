@@ -2,12 +2,15 @@ import pandas as pd
 import streamlit as st
 
 st.set_page_config(
-    page_title="NBA İddaa Üst Analiz Platformu", page_icon="🏀", layout="wide"
+    page_title="OverGrid | NBA İddaa Analiz Platformu",
+    page_icon="🏀",
+    layout="wide",
 )
 
-st.title("🏀 Profesyonel NBA İddaa Üst Analiz Platformu")
+st.title("🔥 OverGrid: Profesyonel NBA Üst Analiz Platformu")
 st.markdown(
-    "Otomatik güncellenen resmi NBA verileriyle ÜST tahmin ve analiz sistemi."
+    "Otomatik güncellenen resmi NBA verileriyle ÜST tahmin ve skor simülasyon"
+    " sistemi."
 )
 
 # Dosya okuma
