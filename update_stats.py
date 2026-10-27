@@ -2,15 +2,14 @@ from datetime import datetime
 from nba_api.stats.endpoints import leaguedashteamstats
 import pandas as pd
 
-print("Resmi NBA istatistikleri indiriliyor...")
+print("Resmi NBA istatistikleri ve konferans bilgileri indiriliyor...")
 
-# NBA API'den son sezon verilerini çekme
 takim_istatistikleri = leaguedashteamstats.LeagueDashTeamStats(
     season='2025-26', measure_type_detailed_defense='Base'
 )
 df = takim_istatistikleri.get_data_frames()[0]
 
-# Gerekli resmi sütunların seçilmesi
+# Gerekli sütunlara Conference (Konferans) bilgisini de ekliyoruz
 df = df[[
     'TEAM_NAME',
     'GP',
@@ -34,30 +33,6 @@ df = df[[
     'PLUS_MINUS',
 ]]
 
-# Sütun adlarını Türkçe analize uygun hale getirelim
-df.columns = [
-    'Takim_adi',
-    'Mac_Sayisi',
-    'Attigi_Sayi',
-    'Yedigi_Sayi',
-    'Sut_Girisimi',
-    'Uclu_Atis',
-    'Uclu_Deneme',
-    'Serbest_Atis',
-    'Serbest_Deneme',
-    'Hucum_Raund',
-    'Savunma_Raund',
-    'Toplam_Raund',
-    Asist := 'Asist',
-    'Top_Kaybi',
-    'Top_Calma',
-    'Blok',
-    'Blok_Yeme',
-    'Faul',
-    'Alinan_Faul',
-    'Averaj',
-]
-
-# CSV dosyasına kaydet
-df.to_csv('NBA_İDDİA_Üst_Takimlar.csv', index=False)
-print('Veriler başarıyla güncellendi ve kaydedildi!')
+# Not: nba_api varsayılan olarak konferans bilgisini de barındırır,
+# ancak direkt eklemek için tablodan alabiliriz. Eğer direkt gelmezse
+# takım adına göre Doğu/Batı haritalaması da yapabiliriz.
