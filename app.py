@@ -68,8 +68,8 @@ with tab1:
 with tab2:
   st.subheader("Maç Eşleşmesi ve Skor Tahmin Simülasyonu")
   st.markdown(
-      "İki takım seçerek bu maçın olası toplam skorunu ve ÜST ihtimalini"
-      " hesaplayın."
+      "İki farklı takım seçerek bu maçın olası toplam skorunu ve ÜST"
+      " ihtimalini hesaplayın."
   )
 
   takimlar = df["Takim_adi"].tolist() if "Takim_adi" in df.columns else []
@@ -78,10 +78,12 @@ with tab2:
     col1, col2 = st.columns(2)
     with col1:
       ev_sahibi = st.selectbox("🏠 Ev Sahibi Takım", takimlar, index=0)
+
+    # Ev sahibinin seçtiği takım deplasman listesinden otomatik çıkarılır
+    kalan_takimlar = [t for t in takimlar if t != ev_sahibi]
+
     with col2:
-      deplasman = st.selectbox(
-          "✈️ Deplasman Takımı", takimlar, index=1 if len(takimlar) > 1 else 0
-      )
+      deplasman = st.selectbox("✈️ Deplasman Takımı", kalan_takimlar, index=0)
 
     if st.button("🚀 Maçı Analiz Et ve Tahmin Üret", type="primary"):
       ev_row = df[df["Takim_adi"] == ev_sahibi].iloc[0]
