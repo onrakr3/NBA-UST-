@@ -22,6 +22,43 @@ except Exception as e:
   st.error(f"Veri yüklenirken hata oluştu: {e}")
   st.stop()
 
+# NBA Takım Logo Sözlüğü (Resmi CDN)
+logo_dict = {
+    "Atlanta Hawks": "https://a.espncdn.com/i/teamlogos/nba/500/atl.png",
+    "Boston Celtics": "https://a.espncdn.com/i/teamlogos/nba/500/bos.png",
+    "Brooklyn Nets": "https://a.espncdn.com/i/teamlogos/nba/500/bkn.png",
+    "Charlotte Hornets": "https://a.espncdn.com/i/teamlogos/nba/500/cha.png",
+    "Chicago Bulls": "https://a.espncdn.com/i/teamlogos/nba/500/chi.png",
+    "Cleveland Cavaliers": "https://a.espncdn.com/i/teamlogos/nba/500/cle.png",
+    "Dallas Mavericks": "https://a.espncdn.com/i/teamlogos/nba/500/dal.png",
+    "Denver Nuggets": "https://a.espncdn.com/i/teamlogos/nba/500/den.png",
+    "Detroit Pistons": "https://a.espncdn.com/i/teamlogos/nba/500/det.png",
+    "Golden State Warriors": "https://a.espncdn.com/i/teamlogos/nba/500/gs.png",
+    "Houston Rockets": "https://a.espncdn.com/i/teamlogos/nba/500/hou.png",
+    "Indiana Pacers": "https://a.espncdn.com/i/teamlogos/nba/500/ind.png",
+    "Los Angeles Clippers": "https://a.espncdn.com/i/teamlogos/nba/500/lac.png",
+    "Los Angeles Lakers": "https://a.espncdn.com/i/teamlogos/nba/500/lal.png",
+    "Memphis Grizzlies": "https://a.espncdn.com/i/teamlogos/nba/500/mem.png",
+    "Miami Heat": "https://a.espncdn.com/i/teamlogos/nba/500/mia.png",
+    "Milwaukee Bucks": "https://a.espncdn.com/i/teamlogos/nba/500/mil.png",
+    "Minnesota Timberwolves": "https://a.espncdn.com/i/teamlogos/nba/500/min.png",
+    "New Orleans Pelicans": "https://a.espncdn.com/i/teamlogos/nba/500/no.png",
+    "New York Knicks": "https://a.espncdn.com/i/teamlogos/nba/500/nyk.png",
+    "Oklahoma City Thunder": "https://a.espncdn.com/i/teamlogos/nba/500/okc.png",
+    "Orlando Magic": "https://a.espncdn.com/i/teamlogos/nba/500/orl.png",
+    "Philadelphia 76ers": "https://a.espncdn.com/i/teamlogos/nba/500/phi.png",
+    "Phoenix Suns": "https://a.espncdn.com/i/teamlogos/nba/500/phx.png",
+    "Portland Trail Blazers": "https://a.espncdn.com/i/teamlogos/nba/500/por.png",
+    "Sacramento Kings": "https://a.espncdn.com/i/teamlogos/nba/500/sac.png",
+    "San Antonio Spurs": "https://a.espncdn.com/i/teamlogos/nba/500/sas.png",
+    "Toronto Raptors": "https://a.espncdn.com/i/teamlogos/nba/500/tor.png",
+    "Utah Jazz": "https://a.espncdn.com/i/teamlogos/nba/500/uta.png",
+    "Washington Wizards": "https://a.espncdn.com/i/teamlogos/nba/500/wsh.png",
+}
+
+# DataFrame'e logo sütunu ekleme
+df["Logo"] = df["Takim_adi"].map(logo_dict)
+
 # Sekmeler oluşturma (Tabs)
 tab1, tab2 = st.tabs(
     ["📊 Genel Takım İstatistikleri", "🔥 Maç Eşleşmesi & Skor Tahmini"]
@@ -63,7 +100,17 @@ with tab1:
   ):
     df_filtered["ÜST_Durumu"] = df_filtered.apply(potansiyel_hesapla, axis=1)
 
-  st.dataframe(df_filtered, use_container_width=True)
+  # Logonun tabloda en başta görünmesi için sütun düzenlemesi
+  cols = ["Logo"] + [c for c in df_filtered.columns if c != "Logo"]
+  df_filtered = df_filtered[cols]
+
+  st.dataframe(
+      df_filtered,
+      column_config={
+          "Logo": st.column_config.ImageColumn("Arma", help="Kulüp Arması")
+      },
+      use_container_width=True,
+  )
 
 with tab2:
   st.subheader("Maç Eşleşmesi ve Skor Tahmin Simülasyonu")
@@ -78,12 +125,16 @@ with tab2:
     col1, col2 = st.columns(2)
     with col1:
       ev_sahibi = st.selectbox("🏠 Ev Sahibi Takım", takimlar, index=0)
+      if ev_sahibi in logo_dict:
+        st.image(logo_dict[ev_sahibi], width=80)
 
     # Ev sahibinin seçtiği takım deplasman listesinden otomatik çıkarılır
     kalan_takimlar = [t for t in takimlar if t != ev_sahibi]
 
     with col2:
       deplasman = st.selectbox("✈️ Deplasman Takımı", kalan_takimlar, index=0)
+      if deplasman in logo_dict:
+        st.image(logo_dict[deplasman], width=80)
 
     if st.button("🚀 Maçı Analiz Et ve Tahmin Üret", type="primary"):
       ev_row = df[df["Takim_adi"] == ev_sahibi].iloc[0]
