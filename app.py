@@ -1,55 +1,112 @@
-import streamlit as st
 import pandas as pd
-import numpy as np
+import streamlit as st
 
-st.set_page_config(page_title="NBA ÜST Tahmin Sistemi", layout="wide")
-st.title("🏀 NBA İddaa ÜST Tahmin ve Analiz Sistemi")
-st.markdown("Mevcut takım ortalamaları ve istatistiklerine dayanarak otomatik ÜST analiz motoru.")
+st.set_page_config(
+    page_title="NBA İddaa Üst Analiz Platformu", page_icon="🏀", layout="wide"
+)
 
-@st.cache_data
-def load_data():
-    df = pd.read_csv('NBA_İDDİA_Üst_Takimlar.csv', encoding='utf-8')
-    df.columns = df.columns.str.strip()
-    return df
+st.title("🏀 Profesyonel NBA İddaa Üst Analiz Platformu")
+st.markdown(
+    "Otomatik güncellenen resmi NBA verileriyle ÜST tahmin ve analiz sistemi."
+)
+
+# Dosya okuma
+dosya_adi = "NBA_İDDİA_Üst_Takimlar.csv"
 
 try:
-    takimlar = load_data()
+  df = pd.read_csv(dosya_adi)
 except Exception as e:
-    st.error(f"Veri yüklenirken hata oluştu: {e}")
-    st.stop()
+  st.error(f"Veri yüklenirken hata oluştu: {e}")
+  st.stop()
 
-st.sidebar.header("Maç Simülasyonu")
-takim_listesi = sorted(takimlar['Takim_adi'].unique())
-ev_sahibi = st.sidebar.selectbox("Ev Sahibi Takım", takim_listesi, index=0)
-deplasman = st.sidebar.selectbox("Deplasman Takımı", takim_listesi, index=1)
-iddaa_baremi = st.sidebar.number_input("İddaa Açılış Baremi (Toplam Sayı)", min_value=180.0, max_value=260.0, value=225.5, step=0.5)
+# Sekmeler oluşturma (Tabs)
+tab1, tab2 = st.tabs(
+    ["📊 Genel Takım İstatistikleri", "🔥 Maç Eşleşmesi & Skor Tahmini"]
+)
 
-if ev_sahibi == deplasman:
-    st.sidebar.warning("Ev sahibi ve deplasman aynı olamaz!")
-else:
-    ev_row = takimlar[takimlar['Takim_adi'] == ev_sahibi].iloc[0]
-    dep_row = takimlar[takimlar['Takim_adi'] == deplasman].iloc[0]
-    
-    ev_attigi = (ev_row['Evinde_Attigi'] + dep_row['Deplasmanda_Yedigi']) / 2
-    dep_attigi = (dep_row['Deplasmanda_Attigi'] + ev_row['Evinde_Yedigi']) / 2
-    toplam_beklenen = ev_attigi + dep_attigi
+with tab1:
+  st.subheader("Takım Hücum ve Savunma Ortalamaları")
+  st.markdown(
+      "Takımların güncel performanslarına göre hazırlanan ÜST analiz tablosu."
+  )
 
-    st.divider()
-    col1, col2, col3 = st.columns(3)
+  # Arama kutusu
+  arama = st.text_input(
+      "🔍 Takım Ara", placeholder="Takım adı yazın (örn. Boston, Dallas)..."
+  )
+  if arama:
+    df_filtered = df[df["Takim_adi"].str.contains(arama, case=False, na=False)]
+  else:
+    df_filtered = df
+
+
+  # Renkli ÜST Potansiyeli Belirleme Fonksiyonu
+  def potansiyel_hesapla(row):
+    try:
+      toplam = (row.get("Evinde_Attigi", 110) + row.get("Evinde_Yedigi", 110)) / 2
+      if toplam > 118:
+        return "🟢 Yüksek ÜST Potansiyeli"
+      elif toplam > 112:
+        return "🟡 Orta ÜST Potansiyeli"
+      else:
+        return "🔴 Düşük / Sınırda"
+    except:
+      return "⚪ Normal"
+
+
+  if (
+      "Evinde_Attigi" in df_filtered.columns
+      and "Evinde_Yedigi" in df_filtered.columns
+  ):
+    df_filtered["ÜST_Durumu"] = df_filtered.apply(potansiyel_hesapla, axis=1)
+
+  st.dataframe(df_filtered, use_container_width=True)
+
+with tab2:
+  st.subheader("Maç Eşleşmesi ve Skor Tahmin Simülasyonu")
+  st.markdown(
+      "İki takım seçerek bu maçın olası toplam skorunu ve ÜST ihtimalini"
+      " hesaplayın."
+  )
+
+  takimlar = df["Takim_adi"].tolist() if "Takim_adi" in df.columns else []
+
+  if len(takimlar) >= 2:
+    col1, col2 = st.columns(2)
     with col1:
-        st.metric(label=f"🏠 {ev_sahibi} Beklenen", value=f"{ev_attigi:.2f} sayı")
+      ev_sahibi = st.selectbox("🏠 Ev Sahibi Takım", takimlar, index=0)
     with col2:
-        st.metric(label=f"✈️ {deplasman} Beklenen", value=f"{dep_attigi:.2f} sayı")
-    with col3:
-        delta_val = f"{toplam_beklenen - iddaa_baremi:+.2f}"
-        st.metric(label="📊 Toplam Beklenen Skor", value=f"{toplam_beklenen:.2f}", delta=delta_val)
+      deplasman = st.selectbox(
+          "✈️ Deplasman Takımı", takimlar, index=1 if len(takimlar) > 1 else 0
+      )
 
-    st.subheader("🎯 Tahmin ve Analiz Sonucu")
-    if toplam_beklenen > iddaa_baremi:
-        st.success(f"**Tahmin: ÜST** | Model Öngörüsü ({toplam_beklenen:.1f}), İddaa Baremi ({iddaa_baremi}) üzerindedir.")
-    else:
-        st.warning(f"**Tahmin: ALT / Riskli** | Model Öngörüsü ({toplam_beklenen:.1f}), İddaa Baremi ({iddaa_baremi}) altında kalıyor.")
+    if st.button("🚀 Maçı Analiz Et ve Tahmin Üret", type="primary"):
+      ev_row = df[df["Takim_adi"] == ev_sahibi].iloc[0]
+      dep_row = df[df["Takim_adi"] == deplasman].iloc[0]
 
-st.divider()
-st.subheader("📋 Tüm Takım İstatistikleri Arşivi")
-st.dataframe(takimlar, use_container_width=True)
+      ev_at = ev_row.get("Evinde_Attigi", 115)
+      ev_ye = ev_row.get("Evinde_Yedigi", 112)
+      dep_at = dep_row.get("Deplasman_Attigi", 112)
+      dep_ye = dep_row.get("Deplasman_Yedigi", 115)
+
+      tahmini_ev = (ev_at + dep_ye) / 2
+      tahmini_dep = (dep_at + ev_ye) / 2
+      toplam_skor = tahmini_ev + tahmini_dep
+
+      st.success("Analiz Başarıyla Tamamlandı! 🎯")
+
+      mcol1, mcol2, mcol3 = st.columns(3)
+      mcol1.metric("🏠 Ev Sahibi Beklenen Skor", f"{tahmini_ev:.1f}")
+      mcol2.metric("✈️ Deplasman Beklenen Skor", f"{tahmini_dep:.1f}")
+      mcol3.metric("📊 Tahmini Toplam Skor", f"{toplam_skor:.1f}")
+
+      if toplam_skor > 230:
+        st.markdown(
+            "### 🔥 Sonuç: **KESİN ÜST!** (Yüksek tempo ve hücum gücü)"
+        )
+      elif toplam_skor > 220:
+        st.markdown("### ⚡ Sonuç: **ÜST Olmaya Aday Maç**")
+      else:
+        st.markdown("### 🛡️ Sonuç: **Alt / Sınırda Mücadele**")
+  else:
+    st.warning("Yeterli takım verisi bulunamadı.")
