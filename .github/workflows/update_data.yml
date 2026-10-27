@@ -2,7 +2,6 @@ name: Gunluk NBA Veri Guncelleme
 
 on:
   schedule:
-    # Her gün Türkiye saati ile sabah 08:00'de çalışır
     - cron: '0 5 * * *'
   workflow_dispatch:
 
@@ -22,7 +21,7 @@ jobs:
 
       - name: Gerekli Kutuphaneleri Yukle
         run: |
-          pip install pandas requests
+          pip install pandas requests nba_api
 
       - name: Guncelleme Scriptini Calistir
         run: python update_stats.py
