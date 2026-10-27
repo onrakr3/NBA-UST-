@@ -5,13 +5,9 @@ st.set_page_config(
     page_title="OverGrid | NBA İddaa Analiz Platformu",
     page_icon="🏀",
     layout="wide",
-)
-
 st.title("🔥 OverGrid: Profesyonel NBA Üst Analiz Platformu")
 st.markdown(
     "Konferans bazlı resmi NBA verileri ve ÜST iddia tahmin matrisi."
-)
-
 dosya_adi = "NBA_İDDİA_Üst_Takimlar.csv"
 
 try:
@@ -28,11 +24,7 @@ if "Takim_adi" in df.columns:
 # --------------------------
 
   st.error(f"Veri yüklenirken hata oluştu: {e}")
-  st.stop()
-
-
-def get_logo(takim_adi):
-  if not isinstance(takim_adi, str):
+  st.
     return None
   t = takim_adi.lower()
   if "atlanta" in t or "hawks" in t:
