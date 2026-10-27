@@ -23,17 +23,6 @@ except Exception as e:
   st.error(f"Veri yüklenirken hata oluştu: {e}")
   st.stop()
 
-# --- BURAYA EKLEYECEKSİN ---
-isim_duzeltmeleri = {
-    "Indiana Pacers": "Indiana",
-    "Indiana": "Indiana",
-    "Oklahoma City Thunder": "Oklahoma",
-    "Oklahoma": "Oklahoma",
-    "Philadelphia 76ers": "Philadelphia",
-    "Philadelphia": "Philadelphia",
-    "Utah Jazz": "Utah Jazz",
-}
-
 if "Takim_adi" in df.columns:
   df["Takim_adi"] = df["Takim_adi"].replace(isim_duzeltmeleri)
 # --------------------------
