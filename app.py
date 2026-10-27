@@ -13,7 +13,6 @@ st.markdown(
     " sistemi."
 )
 
-# Dosya okuma
 dosya_adi = "NBA_İDDİA_Üst_Takimlar.csv"
 
 try:
@@ -23,7 +22,6 @@ except Exception as e:
   st.stop()
 
 
-# Akıllı Takım Logo Eşleştirme Fonksiyonu
 def get_logo(takim_adi):
   if not isinstance(takim_adi, str):
     return None
@@ -91,10 +89,8 @@ def get_logo(takim_adi):
   return None
 
 
-# DataFrame'e logo sütunu ekleme
 df["Logo"] = df["Takim_adi"].apply(get_logo)
 
-# Sekmeler oluşturma (Tabs)
 tab1, tab2 = st.tabs(
     ["📊 Genel Takım İstatistikleri", "🔥 Maç Eşleşmesi & Skor Tahmini"]
 )
@@ -105,7 +101,6 @@ with tab1:
       "Takımların güncel performanslarına göre hazırlanan ÜST analiz tablosu."
   )
 
-  # Arama kutusu
   arama = st.text_input(
       "🔍 Takım Ara", placeholder="Takım adı yazın (örn. Boston, Dallas)..."
   )
@@ -115,7 +110,6 @@ with tab1:
     df_filtered = df
 
 
-  # Renkli ÜST Potansiyeli Belirleme Fonksiyonu
   def potansiyel_hesapla(row):
     try:
       toplam = (row.get("Evinde_Attigi", 110) + row.get("Evinde_Yedigi", 110)) / 2
@@ -135,7 +129,6 @@ with tab1:
   ):
     df_filtered["ÜST_Durumu"] = df_filtered.apply(potansiyel_hesapla, axis=1)
 
-  # Logonun tabloda en başta görünmesi için sütun düzenlemesi
   cols = ["Logo"] + [c for c in df_filtered.columns if c != "Logo"]
   df_filtered = df_filtered[cols]
 
@@ -150,8 +143,8 @@ with tab1:
 with tab2:
   st.subheader("Maç Eşleşmesi ve Skor Tahmin Simülasyonu")
   st.markdown(
-      "İki farklı takım seçerek bu maçın olası toplam skorunu ve ÜST"
-      " ihtimalini hesaplayın."
+      "İki farklı takım seçerek bu maçın olası toplam skorunu ve **tüm iddia"
+      " baremlerine göre** ÜST/ALT ihtimallerini analiz edin."
   )
 
   takimlar = df["Takim_adi"].tolist() if "Takim_adi" in df.columns else []
@@ -172,7 +165,7 @@ with tab2:
       if dep_logo:
         st.image(dep_logo, width=80)
 
-    if st.button("🚀 Maçı Analiz Et ve Tahmin Üret", type="primary"):
+    if st.button("🚀 Kapsamlı Barem ve Olasılık Matrisi Üret", type="primary"):
       ev_row = df[df["Takim_adi"] == ev_sahibi].iloc[0]
       dep_row = df[df["Takim_adi"] == deplasman].iloc[0]
 
@@ -185,35 +178,51 @@ with tab2:
       tahmini_dep = (dep_at + ev_ye) / 2
       toplam_skor = tahmini_ev + tahmini_dep
 
-      baz_baraj = 226.5
-      fark = toplam_skor - baz_baraj
-      ust_olasilik = min(max(int(50 + (fark * 4.5)), 15), 95)
+      st.success("Analiz Başarıyla Tamamlandı! 🎯")
 
-      st.success("Profesyonel Analiz Başarıyla Tamamlandı! 🎯")
-
-      mcol1, mcol2, mcol3, mcol4 = st.columns(4)
+      mcol1, mcol2, mcol3 = st.columns(3)
       mcol1.metric("🏠 Ev Beklenen", f"{tahmini_ev:.1f}")
       mcol2.metric("✈️ Dep Beklenen", f"{tahmini_dep:.1f}")
-      mcol3.metric("📊 Toplam Skor", f"{toplam_skor:.1f}")
-      mcol4.metric("🔥 ÜST İhtimali", f"%{ust_olasilik}")
+      mcol3.metric("📊 Model Toplam Skor", f"{toplam_skor:.1f}")
 
-      st.write(f"**Maçın 226.5 ÜST Bitme Olasılığı (%{ust_olasilik})**")
-      st.progress(ust_olasilik)
+      st.markdown("---")
+      st.markdown(
+          "### 📈 Tüm İddaa Baremleri İçin ÜST / ALT Tutma İhtimal Matrisi"
+      )
+      st.markdown(
+          "En düşük güvenli baremden en yüksek riskli iddia baremine kadar tüm"
+          " olasılıklar:"
+      )
 
-      if ust_olasilik >= 75:
-        st.markdown(
-            "### 🔥 Kesin Tavsiye: **BANKO ÜST!** \n*İki takımın da"
-            " temposu ve savunma zaafları yüksek skor üretmeye çok uygun.*"
-        )
-      elif ust_olasilik >= 55:
-        st.markdown(
-            "### ⚡ Tavsiye: **ÜST Olmaya Aday** \n*Maçın hücum ağırlıklı"
-            " geçmesi bekleniyor ancak sınırda kalabilir.*"
-        )
-      else:
-        st.markdown(
-            "### 🛡️ Tavsiye: **ALT veya Sınırda Mücadele** \n*Takımların"
-            " savunma dirençleri bu maçta skoru baskılayabilir.*"
-        )
+      merkez_tam = int(toplam_skor)
+      barem_listesi = [float(merkez_tam + i) + 0.5 for i in range(-7, 8)]
+
+      matrix_data = []
+      for barem in barem_listesi:
+        fark = toplam_skor - barem
+        ust_yuzde = min(max(int(50 + (fark * 5)), 5), 95)
+        alt_yuzde = 100 - ust_yuzde
+
+        if ust_yuzde >= 75:
+          tavsiye = "🔥 Çok Güçlü ÜST"
+        elif ust_yuzde >= 55:
+          tavsiye = "⚡ İdeal ÜST"
+        elif ust_yuzde <= 25:
+          tavsiye = "🛡️ Çok Güçlü ALT"
+        elif ust_yuzde <= 45:
+          tavsiye = "🧊 İdeal ALT"
+        else:
+          tavsiye = "⚖️ Sınırda / Riskli"
+
+        matrix_data.append({
+            "İddaa Baremi": f"{barem} ÜST / ALT",
+            "ÜST İhtimali": f"%{ust_yuzde}",
+            "ALT İhtimali": f"%{alt_yuzde}",
+            "Analiz Tavsiyesi": tavsiye,
+        })
+
+      df_matrix = pd.DataFrame(matrix_data)
+      st.dataframe(df_matrix, use_container_width=True)
+
   else:
     st.warning("Yeterli takım verisi bulunamadı.")
