@@ -18,8 +18,22 @@ except Exception as e:
   st.error(f"Veri yüklenirken hata oluştu: {e}")
   st.stop()
 
+# İstediğin takım isimleri ve genel düzeltmeler için sözlük
+isim_duzeltmeleri = {
+    "Indiana": "Indiana",
+    "Oklahoma": "Oklahoma",
+    "Philadelphia": "Philadelphia",
+    "Utah": "Utah Jazz",
+    "Utah Jazz": "Utah Jazz",
+}
 
-# Hem İngilizce resmi lakapları hem de mevcut Türkçe/kısa isimleri yakalayan esnek logo fonksiyonu
+# Eğer dataframe içinde Takim_adi sütunu varsa isimleri güncelleyelim
+if "Takim_adi" in df.columns:
+  for eski, yeni in isim_duzeltmeleri.items():
+    df["Takim_adi"] = df["Takim_adi"].str.replace(eski, yeni, regex=False)
+
+
+# Esnek ve kusursuz logo eşleştirme fonksiyonu
 def get_logo(takim_adi):
   if not isinstance(takim_adi, str):
     return None
@@ -68,7 +82,9 @@ def get_logo(takim_adi):
     return "https://a.espncdn.com/i/teamlogos/nba/500/okc.png"
   elif "orlando" in t or "magic" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/orl.png"
-  elif "philadelphia" in t or "76ers" in t or "phila" in t:
+  elif (
+      "philadelphia" in t or "76ers" in t or "phila" in t or "phıladelphia" in t
+  ):
     return "https://a.espncdn.com/i/teamlogos/nba/500/phi.png"
   elif "phoenix" in t or "suns" in t or "anka" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/phx.png"
@@ -145,7 +161,6 @@ with tab2:
       ev_row = df[df["Takim_adi"] == ev_sahibi].iloc[0]
       dep_row = df[df["Takim_adi"] == deplasman].iloc[0]
 
-      # Sütun isimlerinin uyumluluğuna göre güvenli okuma
       ev_at = (
           ev_row.get("Attigi_Sayi", None)
           if "Attigi_Sayi" in ev_row
@@ -190,7 +205,7 @@ with tab2:
         ust_yuzde = min(max(int(50 + (fark * 5)), 5), 95)
         alt_yuzde = 100 - ust_yuzde
 
-        if ust_yuzde >= 75:
+        if ust_yuzge := ust_yuzde >= 75:
           tavsiye = "🔥 Çok Güçlü ÜST"
         elif ust_yuzde >= 55:
           tavsiye = "⚡ İdeal ÜST"
