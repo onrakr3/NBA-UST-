@@ -22,42 +22,77 @@ except Exception as e:
   st.error(f"Veri yüklenirken hata oluştu: {e}")
   st.stop()
 
-# NBA Takım Logo Sözlüğü (Resmi CDN)
-logo_dict = {
-    "Atlanta Hawks": "https://a.espncdn.com/i/teamlogos/nba/500/atl.png",
-    "Boston Celtics": "https://a.espncdn.com/i/teamlogos/nba/500/bos.png",
-    "Brooklyn Nets": "https://a.espncdn.com/i/teamlogos/nba/500/bkn.png",
-    "Charlotte Hornets": "https://a.espncdn.com/i/teamlogos/nba/500/cha.png",
-    "Chicago Bulls": "https://a.espncdn.com/i/teamlogos/nba/500/chi.png",
-    "Cleveland Cavaliers": "https://a.espncdn.com/i/teamlogos/nba/500/cle.png",
-    "Dallas Mavericks": "https://a.espncdn.com/i/teamlogos/nba/500/dal.png",
-    "Denver Nuggets": "https://a.espncdn.com/i/teamlogos/nba/500/den.png",
-    "Detroit Pistons": "https://a.espncdn.com/i/teamlogos/nba/500/det.png",
-    "Golden State Warriors": "https://a.espncdn.com/i/teamlogos/nba/500/gs.png",
-    "Houston Rockets": "https://a.espncdn.com/i/teamlogos/nba/500/hou.png",
-    "Indiana Pacers": "https://a.espncdn.com/i/teamlogos/nba/500/ind.png",
-    "Los Angeles Clippers": "https://a.espncdn.com/i/teamlogos/nba/500/lac.png",
-    "Los Angeles Lakers": "https://a.espncdn.com/i/teamlogos/nba/500/lal.png",
-    "Memphis Grizzlies": "https://a.espncdn.com/i/teamlogos/nba/500/mem.png",
-    "Miami Heat": "https://a.espncdn.com/i/teamlogos/nba/500/mia.png",
-    "Milwaukee Bucks": "https://a.espncdn.com/i/teamlogos/nba/500/mil.png",
-    "Minnesota Timberwolves": "https://a.espncdn.com/i/teamlogos/nba/500/min.png",
-    "New Orleans Pelicans": "https://a.espncdn.com/i/teamlogos/nba/500/no.png",
-    "New York Knicks": "https://a.espncdn.com/i/teamlogos/nba/500/nyk.png",
-    "Oklahoma City Thunder": "https://a.espncdn.com/i/teamlogos/nba/500/okc.png",
-    "Orlando Magic": "https://a.espncdn.com/i/teamlogos/nba/500/orl.png",
-    "Philadelphia 76ers": "https://a.espncdn.com/i/teamlogos/nba/500/phi.png",
-    "Phoenix Suns": "https://a.espncdn.com/i/teamlogos/nba/500/phx.png",
-    "Portland Trail Blazers": "https://a.espncdn.com/i/teamlogos/nba/500/por.png",
-    "Sacramento Kings": "https://a.espncdn.com/i/teamlogos/nba/500/sac.png",
-    "San Antonio Spurs": "https://a.espncdn.com/i/teamlogos/nba/500/sas.png",
-    "Toronto Raptors": "https://a.espncdn.com/i/teamlogos/nba/500/tor.png",
-    "Utah Jazz": "https://a.espncdn.com/i/teamlogos/nba/500/uta.png",
-    "Washington Wizards": "https://a.espncdn.com/i/teamlogos/nba/500/wsh.png",
-}
+
+# Akıllı Takım Logo Eşleştirme Fonksiyonu (İsme göre otomatik bulur)
+def get_logo(takim_adi):
+  if not isinstance(takim_adi, str):
+    return None
+  t = takim_adi.lower()
+  if "atlanta" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/atl.png"
+  elif "boston" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/bos.png"
+  elif "brooklyn" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/bkn.png"
+  elif "charlotte" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/cha.png"
+  elif "chicago" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/chi.png"
+  elif "cleveland" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/cle.png"
+  elif "dallas" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/dal.png"
+  elif "denver" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/den.png"
+  elif "detroit" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/det.png"
+  elif "golden" in t or "warriors" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/gs.png"
+  elif "houston" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/hou.png"
+  elif "indiana" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/ind.png"
+  elif "clippers" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/lac.png"
+  elif "lakers" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/lal.png"
+  elif "memphis" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/mem.png"
+  elif "miami" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/mia.png"
+  elif "milwaukee" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/mil.png"
+  elif "minnesota" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/min.png"
+  elif "orleans" in t or "pelicans" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/no.png"
+  elif "knicks" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/nyk.png"
+  elif "oklahoma" in t or "thunder" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/okc.png"
+  elif "orlando" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/orl.png"
+  elif "philadelphia" in t or "76ers" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/phi.png"
+  elif "phoenix" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/phx.png"
+  elif "portland" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/por.png"
+  elif "sacramento" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/sac.png"
+  elif "san antonio" in t or "spurs" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/sas.png"
+  elif "toronto" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/tor.png"
+  elif "utah" in t or "jazz" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/uta.png"
+  elif "washington" in t or "wizards" in t:
+    return "https://a.espncdn.com/i/teamlogos/nba/500/wsh.png"
+  return None
+
 
 # DataFrame'e logo sütunu ekleme
-df["Logo"] = df["Takim_adi"].map(logo_dict)
+df["Logo"] = df["Takim_adi"].apply(get_logo)
 
 # Sekmeler oluşturma (Tabs)
 tab1, tab2 = st.tabs(
@@ -125,16 +160,18 @@ with tab2:
     col1, col2 = st.columns(2)
     with col1:
       ev_sahibi = st.selectbox("🏠 Ev Sahibi Takım", takimlar, index=0)
-      if ev_sahibi in logo_dict:
-        st.image(logo_dict[ev_sahibi], width=80)
+      ev_logo = get_logo(ev_sahibi)
+      if ev_logo:
+        st.image(ev_logo, width=80)
 
     # Ev sahibinin seçtiği takım deplasman listesinden otomatik çıkarılır
     kalan_takimlar = [t for t in takimlar if t != ev_sahibi]
 
     with col2:
       deplasman = st.selectbox("✈️ Deplasman Takımı", kalan_takimlar, index=0)
-      if deplasman in logo_dict:
-        st.image(logo_dict[deplasman], width=80)
+      dep_logo = get_logo(deplasman)
+      if dep_logo:
+        st.image(dep_logo, width=80)
 
     if st.button("🚀 Maçı Analiz Et ve Tahmin Üret", type="primary"):
       ev_row = df[df["Takim_adi"] == ev_sahibi].iloc[0]
