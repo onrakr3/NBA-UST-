@@ -8,9 +8,7 @@ st.set_page_config(
 )
 
 st.title("🔥 OverGrid: Profesyonel NBA Üst Analiz Platformu")
-st.markdown(
-    "Resmi NBA verileriyle tam entegre ÜST tahmin ve iddia barem matrisi."
-)
+st.markdown("Resmi NBA verileriyle ÜST tahmin ve iddia barem matrisi.")
 
 dosya_adi = "NBA_İDDİA_Üst_Takimlar.csv"
 
@@ -21,70 +19,70 @@ except Exception as e:
   st.stop()
 
 
-# Orijinal NBA Takım İsimlerine Göre Kusursuz Logo Eşleştirme
+# Hem İngilizce resmi lakapları hem de mevcut Türkçe/kısa isimleri yakalayan esnek logo fonksiyonu
 def get_logo(takim_adi):
   if not isinstance(takim_adi, str):
     return None
   t = takim_adi.lower()
-  if "hawks" in t:
+  if "atlanta" in t or "hawks" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/atl.png"
-  elif "celtics" in t:
+  elif "boston" in t or "celtics" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/bos.png"
-  elif "nets" in t:
+  elif "brooklyn" in t or "nets" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/bkn.png"
-  elif "hornets" in t:
+  elif "charlotte" in t or "hornets" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/cha.png"
-  elif "bulls" in t:
+  elif "chicago" in t or "bulls" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/chi.png"
-  elif "cavaliers" in t:
+  elif "cleveland" in t or "cavaliers" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/cle.png"
-  elif "mavericks" in t:
+  elif "dallas" in t or "mavericks" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/dal.png"
-  elif "nuggets" in t:
+  elif "denver" in t or "nuggets" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/den.png"
-  elif "pistons" in t:
+  elif "detroit" in t or "pistons" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/det.png"
-  elif "warriors" in t:
+  elif "golden" in t or "warriors" in t or "altın" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/gs.png"
-  elif "rockets" in t:
+  elif "houston" in t or "rockets" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/hou.png"
-  elif "pacers" in t:
+  elif "indiana" in t or "pacers" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/ind.png"
   elif "clippers" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/lac.png"
   elif "lakers" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/lal.png"
-  elif "grizzlies" in t:
+  elif "memphis" in t or "grizzlies" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/mem.png"
-  elif "heat" in t:
+  elif "miami" in t or "heat" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/mia.png"
-  elif "bucks" in t:
+  elif "milwaukee" in t or "bucks" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/mil.png"
-  elif "timberwolves" in t:
+  elif "minnesota" in t or "timberwolves" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/min.png"
-  elif "pelicans" in t:
+  elif "orleans" in t or "pelicans" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/no.png"
-  elif "knicks" in t:
+  elif "knicks" in t or "new york" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/nyk.png"
-  elif "thunder" in t:
+  elif "oklahoma" in t or "thunder" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/okc.png"
-  elif "magic" in t:
+  elif "orlando" in t or "magic" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/orl.png"
-  elif "76ers" in t:
+  elif "philadelphia" in t or "76ers" in t or "phila" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/phi.png"
-  elif "suns" in t:
+  elif "phoenix" in t or "suns" in t or "anka" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/phx.png"
-  elif "blazers" in t or "trail blazers" in t:
+  elif "portland" in t or "blazers" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/por.png"
-  elif "kings" in t:
+  elif "sacramento" in t or "kings" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/sac.png"
-  elif "spurs" in t:
+  elif "san antonio" in t or "spurs" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/sas.png"
-  elif "raptors" in t:
+  elif "toronto" in t or "raptors" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/tor.png"
-  elif "jazz" in t:
+  elif "utah" in t or "jazz" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/uta.png"
-  elif "wizards" in t:
+  elif "washington" in t or "wizards" in t:
     return "https://a.espncdn.com/i/teamlogos/nba/500/wsh.png"
   return None
 
@@ -96,11 +94,11 @@ tab1, tab2 = st.tabs(
 )
 
 with tab1:
-  st.subheader("Resmi NBA Takım Hücum ve Savunma Ortalamaları")
-  st.markdown("Takımların resmi NBA verilerine göre hazırlanan ÜST tablosu.")
+  st.subheader("Takım Hücum ve Savunma Ortalamaları")
+  st.markdown("Takımların performanslarına göre hazırlanan ÜST tablosu.")
 
   arama = st.text_input(
-      "🔍 Takım Ara", placeholder="Takım adı yazın (örn. Lakers, Celtics)..."
+      "🔍 Takım Ara", placeholder="Takım adı yazın (örn. Boston, Lakers)..."
   )
   if arama:
     df_filtered = df[df["Takim_adi"].str.contains(arama, case=False, na=False)]
@@ -113,7 +111,7 @@ with tab1:
   st.dataframe(
       df_filtered,
       column_config={
-          "Logo": st.column_config.ImageColumn("Arma", help="Resmi Kulüp Arması")
+          "Logo": st.column_config.ImageColumn("Arma", help="Kulüp Arması")
       },
       use_container_width=True,
   )
@@ -121,7 +119,7 @@ with tab1:
 with tab2:
   st.subheader("Maç Eşleşmesi ve Skor Tahmin Simülasyonu")
   st.markdown(
-      "İki farklı NBA takımı seçerek tüm iddia baremlerine göre ÜST/ALT"
+      "İki farklı takım seçerek tüm iddia baremlerine göre ÜST/ALT"
       " ihtimallerini inceleyin."
   )
 
@@ -147,16 +145,33 @@ with tab2:
       ev_row = df[df["Takim_adi"] == ev_sahibi].iloc[0]
       dep_row = df[df["Takim_adi"] == deplasman].iloc[0]
 
-      ev_at = ev_row.get("Attigi_Sayi", 115)
-      ev_ye = ev_row.get("Yedigi_Sayi", 112)
-      dep_at = dep_row.get("Attigi_Sayi", 112)
-      dep_ye = dep_row.get("Yedigi_Sayi", 115)
+      # Sütun isimlerinin uyumluluğuna göre güvenli okuma
+      ev_at = (
+          ev_row.get("Attigi_Sayi", None)
+          if "Attigi_Sayi" in ev_row
+          else ev_row.get("Evinde_Attigi", 115)
+      )
+      ev_ye = (
+          ev_row.get("Yedigi_Sayi", None)
+          if "Yedigi_Sayi" in ev_row
+          else ev_row.get("Evinde_Yedigi", 112)
+      )
+      dep_at = (
+          dep_row.get("Attigi_Sayi", None)
+          if "Attigi_Sayi" in dep_row
+          else dep_row.get("Deplasman_Attigi", 112)
+      )
+      dep_ye = (
+          dep_row.get("Yedigi_Sayi", None)
+          if "Yedigi_Sayi" in dep_row
+          else dep_row.get("Deplasman_Yedigi", 115)
+      )
 
       tahmini_ev = (ev_at + dep_ye) / 2
       tahmini_dep = (dep_at + ev_ye) / 2
       toplam_skor = tahmini_ev + tahmini_dep
 
-      st.success("Resmi NBA Analizi Başarıyla Tamamlandı! 🎯")
+      st.success("Analiz Başarıyla Tamamlandı! 🎯")
 
       mcol1, mcol2, mcol3 = st.columns(3)
       mcol1.metric("🏠 Ev Beklenen", f"{tahmini_ev:.1f}")
