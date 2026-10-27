@@ -1,0 +1,36 @@
+name: Gunluk NBA Veri Guncelleme
+
+on:
+  schedule:
+    # Her gün Türkiye saati ile sabah 08:00'de çalışır
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Depoyu Kopyala
+        uses: actions/checkout@v3
+
+      - name: Python Kurulumu
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Gerekli Kutuphaneleri Yukle
+        run: |
+          pip install pandas requests
+
+      - name: Guncelleme Scriptini Calistir
+        run: python update_stats.py
+
+      - name: Degisiklikleri GitHub'a Kaydet
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "action@github.com"
+          git add NBA_İDDİA_Üst_Takimlar.csv
+          git commit -m "Otomatik gunluk NBA veri guncellemesi" || exit 0
+          git push
