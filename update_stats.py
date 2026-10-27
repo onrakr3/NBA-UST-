@@ -2,78 +2,62 @@ from datetime import datetime
 from nba_api.stats.endpoints import leaguedashteamstats
 import pandas as pd
 
-print("NBA istatistikleri indiriliyor...")
+print("Resmi NBA istatistikleri indiriliyor...")
 
 # NBA API'den son sezon verilerini çekme
-team_stats = leaguedashteamstats.LeagueDashTeamStats(
-    season='2025-26', measure_type_detailed_defense='Advanced'
+takim_istatistikleri = leaguedashteamstats.LeagueDashTeamStats(
+    season='2025-26', measure_type_detailed_defense='Base'
 )
-df = team_stats.get_data_frames()[0]
+df = takim_istatistikleri.get_data_frames()[0]
 
-# Gerekli sütunları seçme ve resmi tam isimleri düzeltme
-# (Artık kısaltma yerine tüm takımlar resmi ve tam adıyla yazılacak)
-df = df[
-    [
-        'TEAM_NAME',
-        'GP',
-        'PTS',
-        'FGM',
-        'FGA',
-        'FG3M',
-        'FG3A',
-        'FTM',
-        'FTA',
-        'OREB',
-        'DREB',
-        'REB',
-        'AST',
-        'TOV',
-        'STL',
-        'BLK',
-        'BLKA',
-        'PF',
-        'PFD',
-        'PLUS_MINUS',
-    ]
+# Gerekli resmi sütunların seçilmesi
+df = df[[
+    'TEAM_NAME',
+    'GP',
+    'PTS',
+    'OPP_PTS',
+    'FGA',
+    'FG3M',
+    'FG3A',
+    'FTM',
+    'FTA',
+    'OREB',
+    'DREB',
+    'REB',
+    'AST',
+    'TOV',
+    'STL',
+    'BLK',
+    'BLKA',
+    'PF',
+    'PFD',
+    'PLUS_MINUS',
+]]
+
+# Sütun adlarını Türkçe analize uygun hale getirelim
+df.columns = [
+    'Takim_adi',
+    'Mac_Sayisi',
+    'Attigi_Sayi',
+    'Yedigi_Sayi',
+    'Sut_Girisimi',
+    'Uclu_Atis',
+    'Uclu_Deneme',
+    'Serbest_Atis',
+    'Serbest_Deneme',
+    'Hucum_Raund',
+    'Savunma_Raund',
+    'Toplam_Raund',
+    Asist := 'Asist',
+    'Top_Kaybi',
+    'Top_Calma',
+    'Blok',
+    'Blok_Yeme',
+    'Faul',
+    'Alinan_Faul',
+    'Averaj',
 ]
 
-# Takım adlarını resmi ve eksiksiz formata sabitleme sözlüğü
-isim_duzeltme = {
-    'Phila': 'Philadelphia 76ers',
-    'Philadelphia 76ers': 'Philadelphia 76ers',
-    'New York': 'New York Knicks',
-    'New York Knicks': 'New York Knicks',
-    'Utah': 'Utah Jazz',
-    'Utah Jazz': 'Utah Jazz',
-    'Indiana': 'Indiana Pacers',
-    'Indiana Pacers': 'Indiana Pacers',
-    'Oklahoma City': 'Oklahoma City Thunder',
-    'Oklahoma City Thunder': 'Oklahoma City Thunder',
-}
-
-# Eğer kısa gelen isimler varsa tam adıyla değiştir
-df['TEAM_NAME'] = df['TEAM_NAME'].replace(isim_duzeltme)
-
-# Sütun adlarını Türkçe ve anlaşılır hale getirme
-df = df.rename(
-    columns={
-        'TEAM_NAME': 'Takim_adi',
-        'GP': 'Oynanan_Mac',
-        'PTS': 'Mac_Basina_Sayi',
-    }
-)
-
-# Simülasyon ve analiz için örnek ev/deplasman sütunları türetme
-df['Evinde_Attigi'] = df['Mac_Basina_Sayi'] + 2.5
-df['Evinde_Yedigi'] = 112.0
-df['Deplasman_Attigi'] = df['Mac_Basina_Sayi'] - 1.5
-df['Deplasman_Yedigi'] = 115.0
-
-# CSV dosyası olarak kaydetme
-dosya_adi = 'NBA_İDDİA_Üst_Takimlar.csv'
-df.to_csv(dosya_adi, index=False, encoding='utf-8-sig')
-
-print(
-    f'Veriler başarıyla güncellendi ve {dosya_adi} dosyasına kaydedildi!'
-    f' Tarih: {datetime.now()}'
-)
+# CSV dosyasına kaydet
+df.to_csv('NBA_İDDİA_Üst_Takimlar.csv', index=False)
+print('Veriler başarıyla güncellendi ve kaydedildi!')
