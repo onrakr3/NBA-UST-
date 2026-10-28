@@ -1,38 +1,27 @@
-from datetime import datetime
-from nba_api.stats.endpoints import leaguedashteamstats
 import pandas as pd
+from nba_api.stats.endpoints import leaguedashteamstats
+from nba_api.stats.static import teams
 
-print("Resmi NBA istatistikleri ve konferans bilgileri indiriliyor...")
+print("NBA istatistikleri indiriliyor...")
 
+# NBA API'den son sezonda çekilme (2025-26 sezonu)
 takim_istatistikleri = leaguedashteamstats.LeagueDashTeamStats(
-    season='2025-26', measure_type_detailed_defense='Base'
+    season='2025-26',
+    measure_type_detailed_defense='Base'
 )
 df = takim_istatistikleri.get_data_frames()[0]
 
-# Gerekli sütunlara Conference (Konferans) bilgisini de ekliyoruz
-df = df[[
-    'TEAM_NAME',
-    'GP',
-    'PTS',
-    'OPP_PTS',
-    'FGA',
-    'FG3M',
-    'FG3A',
-    'FTM',
-    'FTA',
-    'OREB',
-    'DREB',
-    'REB',
-    'AST',
-    'TOV',
-    'STL',
-    'BLK',
-    'BLKA',
-    'PF',
-    'PFD',
-    'PLUS_MINUS',
-]]
+# Gerekli sütunların seçilmesi
+columns_to_keep = [
+    'TEAM_NAME', 'GP', 'PTS', 'FGM', 'FGA', 'FG_PCT',
+    'FG3M', 'FG3A', 'FG3_PCT', 'FTM', 'FTA', 'FT_PCT',
+    'OREB', 'DREB', 'REB', 'AST', 'TOV', 'STL', 'BLK',
+    'PF', 'PLUS_MINUS'
+]
 
-# Not: nba_api varsayılan olarak konferans bilgisini de barındırır,
-# ancak direkt eklemek için tablodan alabiliriz. Eğer direkt gelmezse
-# takım adına göre Doğu/Batı haritalaması da yapabiliriz.
+# Mevcut sütunlara göre filtreleme
+df = df[[col for col in columns_to_keep if col in df.columns]]
+
+# CSV dosyasına kaydetme
+df.to_csv('NBA_IDDİA_Üst_Takımlar.csv', index=False)
+print("Veriler başarıyla güncellendi ve kaydedildi!")
