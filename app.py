@@ -90,8 +90,7 @@ with tab1:
     bugunun_maclari = [
         {"ev": "New orleans", "dep": "Sacramento", "saat": "03:00"},
         {"ev": "Atlanta", "dep": "Cleveland", "saat": "03:00"},
-        {"ev": "Portland", "dep": "Memphis", "saat": "03:30"},
-        {"ev": "Toronto", "dep": "Phoenix", "saat": "02:30"}
+        {"ev": "Portland", "dep": "Memphis", "saat": "03:30"} 
     ]
     
     st.markdown("---")
