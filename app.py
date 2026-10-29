@@ -88,9 +88,9 @@ with tab1:
     st.markdown(f"Bugünün Tarihi: **{datetime.now().strftime('%d.%m.%Y')}** - Karşılaşmaları inceleyip tek tıkla simülasyona aktarabilirsiniz.")
     
     bugunun_maclari = [
-        {"ev": "Boston", "dep": "Miami", "saat": "02:00"},
-        {"ev": "Golden State", "dep": "Denver", "saat": "05:00"},
-        {"ev": "Dallas", "dep": "Lakers", "saat": "03:30"},
+        {"ev": "New orleans", "dep": "Sacramento", "saat": "03:00"},
+        {"ev": "Atlanta", "dep": "Cleveland", "saat": "03:00"},
+        {"ev": "Portland", "dep": "Memphis", "saat": "03:30"},
         {"ev": "Toronto", "dep": "Phoenix", "saat": "02:30"}
     ]
     
