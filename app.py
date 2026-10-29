@@ -91,7 +91,6 @@ with tab1:
         {"ev": "New orleans", "dep": "Sacramento", "saat": "03:00"},
         {"ev": "Atlanta", "dep": "Cleveland", "saat": "03:00"},
         {"ev": "Portland", "dep": "Memphis", "saat": "03:30"} 
-        {"ev": "Charlotte", "dep": "Phila", "saat": "01:00"}
     
     st.markdown("---")
     for idx, mac in enumerate(bugunun_maclari):
